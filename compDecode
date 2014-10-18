@@ -1,0 +1,8 @@
+# Compile the decode.c program into object code
+gcc -c -ansi decode.c -I. -Ilib/ -o decode.o
+
+# Compile the decodeMessage.c program into object code
+gcc -c -ansi decodeMessage.c -I. -Ilib/ -o decodeMessage.o
+
+Link the two to make an executable called decodeMessage
+gcc decode.o decodeMessage.o -Llib/ -lm -o decodeMessage
