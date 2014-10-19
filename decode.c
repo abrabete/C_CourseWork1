@@ -175,7 +175,7 @@ void printParameters(int argc, char **argv) {
 /**              The actual decoding of the message                  **/
 /**                                                                  **/
 /** Parameters:                                                      **/
-/**     NODE *first      The pointer to the beginning of the list     **/
+/**     NODE *first      The pointer to the beginning of the list    **/
 /**     int argc        The number of the parameters                 **/
 /**     char **argv     The list of parameters                       **/
 /** Returns:                                                         **/
