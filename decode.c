@@ -1,5 +1,5 @@
 #include <decode.h>
-#include <ctype.h>
+
 short int count = 0; /* the number of values read from the file so far */
 
 /**********************************************************************/
@@ -16,15 +16,15 @@ short int count = 0; /* the number of values read from the file so far */
 
 NODE *processFile ( FILE **p_fp, char *p_fileName) {
 
-	short int readCount; /* the number of values read for the current record*/
-	char val[2];            /* the caracter for the current record */
-	NODE *temp = NULL;   /* the node that has just been read from the file */
-	NODE *head = NULL;      /* a pointer to a node */
-	NODE *first = NULL;
-	NODE *last = NULL;
-	/*first = newNode("A",p_fp);*/
-	printf("OK so far\n");
+	short int readCount;   /* the number of values read for the current record*/
+	char val[2];           /* the caracter for the current record */
+	NODE *temp = NULL;     /* the node that has just been read from the file */
+	NODE *first = NULL;    /* the first node of the list */
+	NODE *last = NULL;     /* the last node of the list during the file procces*/
+
+    /* read values until the end of file */
 	while (!feof(*p_fp)) {
+        /* check for the corrrect content of record */
         if( (readCount = fscanf(*p_fp,"%s",val)) != 1) {
             if (readCount <= 0)
                 break;
@@ -34,17 +34,19 @@ NODE *processFile ( FILE **p_fp, char *p_fileName) {
                 exit(-3);
             }
         }
+        /* check if the read value is a letter or not */
         if ((*val >= 'A' && *val <= 'Z') || (*val >= 'a' && *val <= 'z' )) {
             count++;
-            printf("%s\n",val);
-            printf("is a letter\n");
             temp = newNode(val,p_fp);
+            /* check is this is the first ellement of the list or not*/
             if (first == last && first == NULL) {
+                /* adding the first ellement to the list */
                 first = last = temp;
                 first->next = last->next = NULL;
                 first->back = last->back = NULL;
             }
             else {
+                /* adding the rest of records to the list */
                 last->next = temp;
                 temp->back = last;
                 last = temp;
@@ -53,6 +55,7 @@ NODE *processFile ( FILE **p_fp, char *p_fileName) {
             }
         }
     }
+    /* returning the first element of the list */
 	return first;
 }
 
@@ -72,6 +75,7 @@ NODE *processFile ( FILE **p_fp, char *p_fileName) {
 
 NODE *newNode (char *p_value, FILE **p_fp) {
 
+	/* allocate the memory for the new node */
 	NODE *node = (NODE *)malloc(sizeof(NODE));
 
 	/* check if memory was allocated */
@@ -95,7 +99,7 @@ NODE *newNode (char *p_value, FILE **p_fp) {
 /**     Free the memory held by the list from the root node down     **/
 /**                                                                  **/
 /**  Parameters:                                                     **/
-/**     p_root      The root node of the list                        **/
+/**     p_first      The first node of the list                      **/
 /**  Returns:                                                        **/
 /**     (nothing)                                                    **/
 /**********************************************************************/
@@ -123,20 +127,92 @@ void deleteList( NODE *p_first) {
 /**********************************************************************/
 
 void printList( NODE *p_node) {
+
     NODE *p = p_node;
+
+    /* check if list is empty or not */
     if (p == NULL) {
         printf("The list is empty\n");
         return;
     }
     else {
-        printf("%s\n",p->value);
+        printf("Decoding wheel values:\n");
+        printf("    %s",p->value);
         p = p->next;
         while ( p!= p_node) {
-            printf("%s\n",p->value);
+            printf("%s",p->value);
             p = p->next;
         }
     }
+    printf("\n\n");
 }
 
 
+/**********************************************************************/
+/**                     Function: printParameters                    **/
+/**        Printing out the parameters passed to the program         **/
+/**                                                                  **/
+/** Parameters:                                                      **/
+/**     int argc        The number of parameters                     **/
+/**     char **argv     The list of parameters                       **/
+/** Returns:                                                         **/
+/**     (nothing)                                                    **/
+/**********************************************************************/
 
+void printParameters(int argc, char **argv) {
+
+    printf("Parameter listing:\n");
+	int i = 1;
+	for (i;i<argc;i++) {
+        printf("    %d: %s\n",i,argv[i]);
+	}
+    printf("\n");
+}
+
+
+/**********************************************************************/
+/**                      Function: decoding                          **/
+/**              The actual decoding of the message                  **/
+/**                                                                  **/
+/** Parameters:                                                      **/
+/**     NODE *first      The pointer to the beginning of the list     **/
+/**     int argc        The number of the parameters                 **/
+/**     char **argv     The list of parameters                       **/
+/** Returns:                                                         **/
+/**     (nothing)                                                    **/
+/**********************************************************************/
+
+void decoding( NODE *first, int argc, char **argv) {
+
+    NODE *temp;
+    int i = 2;
+    int x;
+    int j;
+    temp = first;
+    printf("Decoded message:\n");
+    printf("    ");
+    for (i;i<argc;i++) {
+        x = atoi(argv[i]);
+        if ( x == 0) {
+            printf("%s",temp->value);
+        }
+        else {
+            if (x > 0) {
+                for (j=0;j<x;j++) {
+                    temp = temp->next;
+                }
+                printf("%s",temp->value);
+            }
+            else {
+                x = -1*x;
+                for (j=0;j<x;j++) {
+                    temp = temp->back;
+                }
+                printf("%s",temp->value);
+            }
+        }
+
+    }
+    printf("\n");
+
+}

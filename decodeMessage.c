@@ -21,21 +21,22 @@ int main (int argc, char **argv) {
 		return -2;
 	}
 
+	/*printing out the given parameters*/
+	printParameters(argc,argv);
+
 	/* Read the file and construct the linked list */
 	first = processFile(&fp, argv[1]);
 
-
+    /*priting the elements of the list*/
 	printList(first);
 
-
-
-
-
+    /* the decoding of the message */
+    decoding(first,argc,argv);
 
 	/* Delete the list */
     deleteList(first);
 
 	fclose(fp);
+
 	return 0;
 }
-
